@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="vp.jersey.rest.CourseEntity" table="course" schema="" catalog="discg">
+        <id name="id" column="ID">
+            <generator class="native"/>
+        </id>
+        <property name="holes" column="Holes"/>
+        <property name="createdAt" column="Created_at"/>
+        <property name="name" column="Name"/>
+        <property name="location" column="Location"/>
+    </class>
+    <class name="vp.jersey.rest.PlayerEntity" table="player" schema="" catalog="discg">
+        <id name="id" column="ID">
+            <generator class="native"/>
+        </id>
+        <property name="name" column="Name"/>
+        <property name="createdAt" column="Created_at"/>
+    </class>
+    <class name="vp.jersey.rest.PlayerroundEntity" table="playerround" schema="" catalog="discg">
+        <id name="id" column="ID">
+            <generator class="native"/>
+        </id>
+        <property name="scores" column="Scores"/>
+        <many-to-one name="player" class="vp.jersey.rest.PlayerEntity"
+                     column="PlayerID" unique="true" not-null="true"
+                     cascade="all" />
+    </class>
+    <class name="vp.jersey.rest.RoundEntity" table="round" schema="" catalog="discg">
+        <id name="id" column="ID">
+            <generator class="native"/>
+        </id>
+        <property name="playedAt" column="Played_at"/>
+        <many-to-one name="course" class="vp.jersey.rest.CourseEntity"
+                     column="CourseID" unique="true" not-null="true"
+                     cascade="all" />
+    </class>
+    <class name="vp.jersey.rest.PlayerroundlistEntity" table="playerroundlist" schema="" catalog="discg">
+        <composite-id mapped="true" class="vp.jersey.rest.PlayerroundlistEntityPK">
+            <key-property name="playerRoundId" column="PlayerRoundID"/>
+            <key-property name="roundId" column="RoundID"/>
+        </composite-id>
+    </class>
+</hibernate-mapping>
