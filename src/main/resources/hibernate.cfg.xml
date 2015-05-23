@@ -4,12 +4,20 @@
         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/discg?autoReconnect=true</property>
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.connection.password">test1234</property>
-        <property name="hibernate.connection.autocommit">false</property>
+        <!--
+        <property name="hibernate.connection.url">jdbc:mysql://${OPENSHIFT_MYSQL_DB_HOST}:${OPENSHIFT_MYSQL_DB_PORT}/discgolfapi?autoReconnect=true</property>
+        <property name="hibernate.connection.username">${OPENSHIFT_MYSQL_DB_USERNAME}</property>
+        <property name="hibernate.connection.password">${OPENSHIFT_MYSQL_DB_PASSWORD}</property>-->
 
+        <!-- this works
+        <property name="hibernate.connection.url">jdbc:mysql://127.3.253.2:3306/discgolfapi?autoReconnect=true</property>
+        <property name="hibernate.connection.username">adminUFJwki6</property>
+        <property name="hibernate.connection.password">wCxfewqR8D26</property>
+        THIS WORKS !!!! -->
+
+        <property name="hibernate.connection.autocommit">false</property>
+        <!--<property name="connection.datasource">datasources/MySQLDS</property>-->
         <property name="hibernate.connection.provider_class">org.hibernate.c3p0.internal.C3P0ConnectionProvider</property>
 
         <!-- C3P0 connection pool -->
@@ -28,7 +36,8 @@
         <property name="show_sql">false</property>
 
         <!-- Drop and re-create the database schema on startup -->
-        <property name="hbm2ddl.auto">validate</property>
+        <!-- "no table named blah" -->
+        <!--<property name="hbm2ddl.auto">validate</property>-->
 
         <!-- SQL dialect -->
         <property name="dialect">org.hibernate.dialect.MySQL5Dialect</property>

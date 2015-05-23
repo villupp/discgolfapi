@@ -1,8 +1,10 @@
 package vp.jersey.rest;
 
+import com.sun.xml.internal.ws.client.RequestContext;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -28,7 +30,15 @@ public class API {
     @GET
     @Produces("text/html")
     public String printAPIintro() {
-        return "<b>Disc Golf API By Ville Piirainen 2015</b>";
+        /* for openshift deployment testing
+        String host = System.getenv("OPENSHIFT_MYSQL_DB_HOST");
+        String port = System.getenv("OPENSHIFT_MYSQL_DB_PORT");
+        String user = System.getenv("OPENSHIFT_MYSQL_DB_USERNAME");
+        String pass = System.getenv("OPENSHIFT_MYSQL_DB_PASSWORD");
+        String dbString = host+":"+port+" User : "+user+" Pass:"+pass;
+        return dbString;
+        */
+        return "<b>Disc Golf API by Ville Piirainen 2015</b>";
     }
 
     /**
@@ -38,11 +48,11 @@ public class API {
      *                      "playerID:[array of scores];".
      *                      For example "45:3,3,4,3,4,3,3,4,3;46:3,2,4,5,4,7,3,4,2;".
      * @param courseID      ID for the course the round was played on.
-     * @return              HTTP response with appropriate status.
+     * @return              HTTP response (Round-entity) with appropriate status.
      */
     @Path("/addroundscore")
     @POST
-    @Produces(MediaType.TEXT_HTML)
+    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response addRoundScore(@FormParam("scores") String scoresCSV,
                                   @FormParam("courseID") String courseID) {
@@ -92,26 +102,25 @@ public class API {
             if (!session.getTransaction().wasCommitted()){
                 session.getTransaction().commit();
             }
+            return Response
+                    .ok(getRound(roundID).getEntity())
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
         }
         catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error occured while adding scores: " + e.getMessage());
             session.getTransaction().rollback();
-            return Response.serverError()
+            return Response
+                    .serverError()
                     .status(500)
-                    .entity("Error when trying to insert data.")
-                    // Set the status, entity and media type of the response.
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         }
         finally {
             session.close();
         }
-        return Response
-                .ok()
-                // Set the status, entity and media type of the response.
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
+
     }
 
     /**
@@ -350,7 +359,11 @@ public class API {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error : " + e.getMessage());
-            return null;
+            return Response
+                    .serverError()
+                    .status(500)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
         } finally {
             session.close();
         }
@@ -370,15 +383,18 @@ public class API {
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Error : " + e.getMessage());
-                return null;
+                return Response
+                        .serverError()
+                        .status(500)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();
             } finally {
                 session.close();
             }
         }
-        System.out.println("");
+        //System.out.println("");
         return Response
                 .ok(r)
-                .status(500)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
     }

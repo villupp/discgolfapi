@@ -69,7 +69,11 @@
         <artifactId>hibernate-c3p0</artifactId>
         <version>4.3.8.Final</version>
     </dependency>
-
+    <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-catalina</artifactId>
+        <version>7.0.62</version>
+    </dependency>
 
 </dependencies>
 

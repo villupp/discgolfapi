@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
+import com.mysql.jdbc.Driver;
 
 /**
  * Class for MYSQL database connection.
@@ -19,10 +20,35 @@ public class DbConnection {
      * Initializes Hibernate, loads config from hibernate.cfg.xml.
      */
     public static void initHibernate() {
-        try
-        {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
             Configuration configuration = new Configuration();
             configuration.configure("hibernate.cfg.xml");
+            // Setting the database connection properties to the environment variables
+            // given by OpenShift (deployment)
+            String host = System.getenv("OPENSHIFT_MYSQL_DB_HOST");
+            String port = System.getenv("OPENSHIFT_MYSQL_DB_PORT");
+            // MySQL username and password
+            String user = System.getenv("OPENSHIFT_MYSQL_DB_USERNAME");
+            String pass = System.getenv("OPENSHIFT_MYSQL_DB_PASSWORD");
+            // Local conf if deployed locally
+            if (host == null) host = "127.0.0.1";
+            if (port == null) port = "3306";
+            if (user == null) user = "root";
+            if (pass == null) pass = "test1234";
+            // Setting the properties
+            configuration.setProperty(
+                    "hibernate.connection.url",
+                    "jdbc:mysql://" + host + ":" + port + "/discgolfapi?autoReconnect=true"
+            );
+            configuration.setProperty(
+                    "hibernate.connection.username",
+                    user
+            );
+            configuration.setProperty(
+                    "hibernate.connection.password",
+                    pass
+            );
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(
                     configuration.getProperties()).build();
             sessionFactory = configuration.buildSessionFactory(serviceRegistry);

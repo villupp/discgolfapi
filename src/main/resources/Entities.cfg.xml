@@ -4,7 +4,7 @@
     "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
 
-    <class name="vp.jersey.rest.CourseEntity" table="course" schema="" catalog="discg">
+    <class name="vp.jersey.rest.CourseEntity" table="course" schema="" catalog="discgolfapi">
         <id name="id" column="ID">
             <generator class="native"/>
         </id>
@@ -13,14 +13,14 @@
         <property name="name" column="Name"/>
         <property name="location" column="Location"/>
     </class>
-    <class name="vp.jersey.rest.PlayerEntity" table="player" schema="" catalog="discg">
+    <class name="vp.jersey.rest.PlayerEntity" table="player" schema="" catalog="discgolfapi">
         <id name="id" column="ID">
             <generator class="native"/>
         </id>
         <property name="name" column="Name"/>
         <property name="createdAt" column="Created_at"/>
     </class>
-    <class name="vp.jersey.rest.PlayerroundEntity" table="playerround" schema="" catalog="discg">
+    <class name="vp.jersey.rest.PlayerroundEntity" table="playerround" schema="" catalog="discgolfapi">
         <id name="id" column="ID">
             <generator class="native"/>
         </id>
@@ -29,7 +29,7 @@
                      column="PlayerID" unique="true" not-null="true"
                      cascade="all" />
     </class>
-    <class name="vp.jersey.rest.RoundEntity" table="round" schema="" catalog="discg">
+    <class name="vp.jersey.rest.RoundEntity" table="round" schema="" catalog="discgolfapi">
         <id name="id" column="ID">
             <generator class="native"/>
         </id>
@@ -38,7 +38,7 @@
                      column="CourseID" unique="true" not-null="true"
                      cascade="all" />
     </class>
-    <class name="vp.jersey.rest.PlayerroundlistEntity" table="playerroundlist" schema="" catalog="discg">
+    <class name="vp.jersey.rest.PlayerroundlistEntity" table="playerroundlist" schema="" catalog="discgolfapi">
         <composite-id mapped="true" class="vp.jersey.rest.PlayerroundlistEntityPK">
             <key-property name="playerRoundId" column="PlayerRoundID"/>
             <key-property name="roundId" column="RoundID"/>
