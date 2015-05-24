@@ -59,7 +59,7 @@ public class PlayerEntity {
         return result;
     }
 
-    public static int addPlayer(PlayerEntity newPlayer) {
+    public static int addNewPlayer(PlayerEntity newPlayer) {
         // Create new player if not in database
         Session session = DbConnection.getSession();
         Transaction tx = null;

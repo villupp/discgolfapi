@@ -243,7 +243,7 @@ public class API {
                     player.setName(entry.getKey());
                     Date date = new Date();
                     player.setCreatedAt(new Timestamp(date.getTime()));
-                    PlayerEntity.addPlayer(player);
+                    PlayerEntity.addNewPlayer(player);
                 } else {
                     // Use existing player
                     System.out.println("List has a player with that entry key (player name)");
@@ -455,11 +455,13 @@ public class API {
      * @return              HTTP response with message and status.
      */
     @Path("/addplayer")
-    @GET
+    @POST
     @Produces("text/html")
-    public Response addPlayer(@QueryParam("name") String name) {
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response addPlayer(@FormParam("name") String name) {
         Session session = DbConnection.getSession();
         try {
+            session.beginTransaction();
             Query query = session.createQuery("from PlayerEntity");
 
             for (PlayerEntity pe : (List < PlayerEntity >)query.list()) {
@@ -467,12 +469,10 @@ public class API {
                 if (pe.getName().equals(name)) {
                     return Response
                             .status(409)
-                            .entity("A player with the name " + name + " already exists.")
                             .header("Access-Control-Allow-Origin", "*")
                             .build();
                 }
             }
-            session.beginTransaction();
             PlayerEntity newPlayer = new PlayerEntity();
             Calendar calendar = Calendar.getInstance();
             Date now = calendar.getTime();
@@ -483,7 +483,8 @@ public class API {
                 session.getTransaction().commit();
             }
             return Response
-                    .ok("Player added succesfully")
+                    .ok("<p>Player added successfully</p>"
+                        + "<a href=\"javascript:void(0)\" onclick=\"javascript:window.history.back();\">Back</button>\n")
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } catch (Exception e) {
