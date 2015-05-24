@@ -110,7 +110,8 @@ public class API {
         catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error occured while adding scores: " + e.getMessage());
-            session.getTransaction().rollback();
+            if (session.getTransaction() != null)
+                session.getTransaction().rollback();
             return Response
                     .serverError()
                     .status(500)
@@ -208,7 +209,8 @@ public class API {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            session.getTransaction().rollback();
+            if (session.getTransaction() != null)
+                session.getTransaction().rollback();
             return Response
                     .serverError()
                     .status(500)
@@ -266,7 +268,8 @@ public class API {
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Error : " + e.getMessage());
-                session.getTransaction().rollback();
+                if (session.getTransaction() != null)
+                    session.getTransaction().rollback();
                 return Response
                         .serverError()
                         .status(500)
@@ -289,7 +292,8 @@ public class API {
                 session.getTransaction().commit();
             } catch (Exception e) {
                 e.printStackTrace();
-                session.getTransaction().rollback();
+                if (session.getTransaction() != null)
+                    session.getTransaction().rollback();
                 return Response
                         .serverError()
                         .status(500)
@@ -414,7 +418,7 @@ public class API {
         // get round
         try {
             System.out.println("get /rounds");
-            Query roundQ = session.createQuery("from RoundEntity");
+            Query roundQ = session.createQuery("from RoundEntity order by playedAt desc");
                 List<RoundEntity> roundQres = (List<RoundEntity>) roundQ.list();
             if (roundQres.size() == 0) {
                 System.out.println("no query results (roundqres)");
@@ -448,7 +452,7 @@ public class API {
      * HTTP GET-request that adds a player to the database.
      *
      * @param name          Name for the new player.
-     * @return              HTTP response with appropriate round list and status.
+     * @return              HTTP response with message and status.
      */
     @Path("/addplayer")
     @GET
@@ -461,7 +465,11 @@ public class API {
             for (PlayerEntity pe : (List < PlayerEntity >)query.list()) {
                 name = name.replace("_", " ");
                 if (pe.getName().equals(name)) {
-                    throw new Exception("A player with the name " + name + " already exists.");
+                    return Response
+                            .status(409)
+                            .entity("A player with the name " + name + " already exists.")
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();
                 }
             }
             session.beginTransaction();
@@ -474,23 +482,22 @@ public class API {
             if (!session.getTransaction().wasCommitted()){
                 session.getTransaction().commit();
             }
+            return Response
+                    .ok("Player added succesfully")
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            if (session.getTransaction() != null)
+                session.getTransaction().rollback();
             e.printStackTrace();
-            System.out.println(e.getMessage());
             System.out.println("Error occured while trying to add player." + e.getMessage());
             return Response
-                    .serverError()
                     .status(500)
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } finally {
             session.close();
         }
-        return Response
-                .ok("Player added succesfully")
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
     }
 
     /**
@@ -524,7 +531,8 @@ public class API {
                 session.getTransaction().commit();
             }
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            if (session.getTransaction() != null)
+                session.getTransaction().rollback();
             e.printStackTrace();
             System.out.println("Error occured while trying to add course." + e.getMessage());
             return Response
@@ -553,7 +561,7 @@ public class API {
         List<Player> players = new ArrayList<Player>();
         Session session = DbConnection.getSession();
         try {
-            Query query = session.createQuery("from PlayerEntity");
+            Query query = session.createQuery("from PlayerEntity order by name");
 
             for (PlayerEntity pe : (List<PlayerEntity>)query.list()) {
                 players.add(new Player(pe));
@@ -624,7 +632,7 @@ public class API {
         List<Course> courses = new ArrayList<Course>();
         Session session = DbConnection.getSession();
         try {
-            Query query = session.createQuery("from CourseEntity");
+            Query query = session.createQuery("from CourseEntity order by createdAt");
             for ( CourseEntity ce : (List<CourseEntity>)query.list()) {
                 courses.add(new Course(ce));
             }
